@@ -9,6 +9,21 @@ class PhotoFilterViewController: UIViewController {
     
     private var originalImage: UIImage? {
         didSet {
+            guard let originalImage = originalImage else {
+                scaledImage = nil // clear out image if original image fails
+                return
+            }
+            
+            var scaledSize = imageView.bounds.size
+            let scale = UIScreen.main.scale
+            scaledSize = CGSize(width: scaledSize.width * scale,
+                                height: scaledSize.height * scale)
+            scaledImage = originalImage.imageByScaling(toSize: scaledSize)
+        }
+    }
+    
+    private var scaledImage: UIImage? {
+        didSet {
             updateViews()
         }
     }
@@ -50,8 +65,8 @@ class PhotoFilterViewController: UIViewController {
     }
     
     private func updateViews() {
-        guard let originalImage = originalImage else { return }
-        imageView.image = filterImage(originalImage)
+        guard let scaledImage = scaledImage else { return }
+        imageView.image = filterImage(scaledImage)
     }
     
 	// MARK: Actions
